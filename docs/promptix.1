@@ -1,0 +1,166 @@
+.TH PROMPTIX 1 "2026-05-02" "0.1.0" "Promptix Manual"
+
+.SH NAME
+promptix \- adversarial pentest toolkit for large language models
+
+.SH SYNOPSIS
+.B promptix
+[\fIOPTIONS\fR]
+
+.SH DESCRIPTION
+\fBPromptix\fR is a command-line security assessment tool for large language
+models (LLMs). It automatically probes any LLM endpoint for common
+vulnerabilities mapped to the OWASP Top 10 for LLM Applications, including:
+
+.IP \(bu 4
+Prompt injection (LLM01)
+.IP \(bu 4
+Insecure output handling / jailbreak (LLM02)
+.IP \(bu 4
+Training-data leakage (LLM06)
+.IP \(bu 4
+Model bias and sycophancy (LLM09)
+.IP \(bu 4
+Adversarial input robustness
+
+Promptix supports OpenAI-compatible APIs, generic HTTP endpoints, and an
+offline echo stub for testing without any API key.
+
+.SH OPTIONS
+
+.TP
+.B \-u, \-\-url \fIURL\fR
+Base URL of the target LLM endpoint.
+For OpenAI-compatible APIs, use the API base (e.g.
+\fIhttps://api.openai.com/v1\fR or \fIhttp://localhost:11434/v1\fR).
+For generic HTTP, provide the full endpoint URL and supply \fB\-\-body\fR.
+
+.TP
+.B \-\-echo
+Use the built-in offline echo stub as the target.
+No API key or network access required. Useful for demos and CI pipelines.
+
+.TP
+.B \-\-model \fIMODEL\fR
+Model name to pass in the request (default: \fIgpt-4o-mini\fR).
+
+.TP
+.B \-k, \-\-key \fIKEY\fR
+API key for authentication. Reads from the \fIOPENAI_API_KEY\fR environment
+variable if not provided on the command line.
+
+.TP
+.B \-\-body \fIJSON\fR
+JSON body template for generic HTTP targets.
+Use \fI{prompt}\fR as the placeholder for the injected payload.
+Example: \fI'{"message":"{prompt}"}'\fR
+
+.TP
+.B \-\-response\-path \fIPATH\fR
+Dot-separated path to extract the model response from the JSON reply.
+Example: \fIchoices.0.message.content\fR
+
+.TP
+.B \-m, \-\-module \fIMODULE\fR
+Attack module to run. Can be specified multiple times.
+Available modules: \fIinjection\fR, \fIjailbreak\fR, \fIbias\fR, \fIleakage\fR,
+\fIrobustness\fR, \fIall\fR (default: \fIall\fR).
+
+.TP
+.B \-o, \-\-output \fIFILE\fR
+Write a structured JSON report to \fIFILE\fR.
+
+.TP
+.B \-\-report\-md \fIFILE\fR
+Write a Markdown pentest report to \fIFILE\fR.
+
+.TP
+.B \-c, \-\-concurrency \fIN\fR
+Maximum number of concurrent probes (default: 4).
+
+.TP
+.B \-\-max\-payloads \fIN\fR
+Limit each module to \fIN\fR payloads. 0 means unlimited (default: 0).
+
+.TP
+.B \-\-stop\-on\-hit
+Stop each module after the first successful finding.
+
+.TP
+.B \-T, \-\-timeout \fISECS\fR
+Per-request timeout in seconds (default: 30).
+
+.TP
+.B \-\-list\-modules
+Print available modules and exit.
+
+.TP
+.B \-V, \-\-version
+Print version and exit.
+
+.TP
+.B \-v, \-\-verbose
+Enable verbose output (show raw payloads and responses).
+
+.TP
+.B \-q, \-\-quiet
+Suppress all output except findings.
+
+.SH EXAMPLES
+
+.TP
+Offline demo with no API key:
+.B promptix \-\-echo
+
+.TP
+Scan a local Ollama instance:
+.B promptix \-u http://localhost:11434/v1
+
+.TP
+Scan OpenAI with a specific model, run only jailbreak and leakage modules:
+.B promptix \-u https://api.openai.com/v1 \-k $OPENAI_API_KEY \-\-model gpt-4o \-m jailbreak \-m leakage
+
+.TP
+Scan a custom HTTP endpoint and save reports:
+.B promptix \-u http://internal-llm.corp/api/chat \-\-body '{"q":"{prompt}"}' \-\-response-path result \-o report.json \-\-report-md report.md
+
+.TP
+Fast scan — limit to 5 payloads per module, 8 concurrent threads, 10 s timeout:
+.B promptix \-\-echo \-\-max-payloads 5 \-c 8 \-T 10
+
+.SH EXIT CODES
+
+.TP
+.B 0
+No findings at or above HIGH severity.
+
+.TP
+.B 1
+One or more HIGH or CRITICAL findings detected.
+
+.TP
+.B 2
+Usage error or configuration problem.
+
+.SH ENVIRONMENT
+
+.TP
+.B OPENAI_API_KEY
+Default API key used when \fB\-\-key\fR is not provided.
+
+.SH FILES
+
+.TP
+.I /usr/lib/python3/dist-packages/promptix/data/
+Built-in payload corpora for each attack module.
+
+.SH SEE ALSO
+.BR garak (1)
+
+.PP
+OWASP Top 10 for Large Language Model Applications:
+.I https://owasp.org/www-project-top-10-for-large-language-model-applications/
+
+.SH AUTHOR
+Deivid Kelven (xM4skByt3z).
+Project homepage: \fIhttps://github.com/xm4skbyt3z/promptix\fR

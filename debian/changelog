@@ -1,0 +1,9 @@
+promptix (0.1.0-1) unstable; urgency=medium
+
+  * Initial release.
+  * Modules: prompt_injection, jailbreak, bias, leakage, robustness.
+  * Targets: openai-compatible, generic HTTP, built-in echo stub.
+  * Optional ART integration for boundary-estimation analysis.
+  * JSON and Markdown report generation.
+
+ -- Deivid Kelven (xM4skByt3z) <xm4skbyt3z@users.noreply.github.com>  Fri, 02 May 2026 12:00:00 +0000

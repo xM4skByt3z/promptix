@@ -1,0 +1,41 @@
+Source: promptix
+Section: net
+Priority: optional
+Maintainer: Deivid Kelven (xM4skByt3z) <xm4skbyt3z@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13),
+               dh-python,
+               python3-all,
+               python3-setuptools,
+               python3-httpx,
+               python3-rich,
+               python3-prompt-toolkit,
+               python3-yaml,
+               python3-pydantic,
+               python3-typer
+Standards-Version: 4.6.2
+Homepage: https://github.com/xm4skbyt3z/promptix
+Rules-Requires-Root: no
+
+Package: promptix
+Architecture: all
+Depends: ${python3:Depends},
+         ${misc:Depends},
+         python3-httpx,
+         python3-rich,
+         python3-prompt-toolkit,
+         python3-yaml,
+         python3-pydantic,
+         python3-typer
+Suggests: python3-sklearn, python3-numpy
+Description: adversarial pentest toolkit for large language models
+ Promptix is a security assessment framework for large language models (LLMs).
+ It automatically probes any LLM endpoint for prompt injection, jailbreak
+ techniques, training-data leakage, model bias, and adversarial input
+ robustness — mapped to the OWASP Top 10 for LLM Applications.
+ .
+ Promptix supports OpenAI-compatible APIs (OpenAI, Ollama, vLLM, LM Studio,
+ llama.cpp), generic HTTP endpoints, and ships an offline echo stub for
+ demo and CI use without any API key.
+ .
+ When the optional Adversarial Robustness Toolbox (ART) is installed,
+ the robustness module adds a boundary-estimation step using HopSkipJump.
